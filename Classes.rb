@@ -48,7 +48,16 @@ class List(title, wip_limit)
 
     # A method for deleting a card from a list
     def delete_card(card)
-        @cards[card.title].delete(card.title)
+        @cards[card.desc].delete(card.title)
     end
 
+end
+
+class Card(description)
+    attr_accessor :description, :creation_date
+
+    def initialize
+        @description = description
+        @creation_date = creation_date
+    end
 end
