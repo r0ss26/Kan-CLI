@@ -87,7 +87,7 @@ def create_list
         if wip_limit == "Custom"
             wip_limit = $prompt.ask("Enter a custom card limit: ").to_i
         elsif wip_limit == "No"
-            wip_limit = 0
+            wip_limit = false
         end
     
         # Create the list and add it the given board
@@ -117,8 +117,7 @@ def create_card
     
         # Create the card and add it to the given list
         card = Card.new(card_desc)
-        $state["current board"].lists[add_to_list]
-
+        $state["current board"].lists[add_to_list].add_card(card)
         add_card = $prompt.select("Would you like to add some cards to your lists?", {"Yes" => true, "No" => false})
     end
 
@@ -140,6 +139,7 @@ end
 
 def init
     display_welcome_screen
+    $state["current board"].display_board
 end
 
 init

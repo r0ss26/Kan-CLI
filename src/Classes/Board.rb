@@ -16,4 +16,20 @@ class Board
     def delete_list(list)
         @lists[list.title].delete(list.title)
     end
+
+    # A method for displaying the board
+    def display_board
+        # Itereate through each list in the board
+        for list in @lists.values
+            # Print the title to the user
+            system "echo '#{list.title}' | lolcat" 
+            # Loop through the cards in the list and print them to the user
+            for card in list.cards.values
+                puts card.description
+            end
+        end
+    end
+
+
+
 end
