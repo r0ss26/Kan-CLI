@@ -1,9 +1,11 @@
-class Card(description)
+require 'suid'
+
+class Card
     attr_accessor :id, :description, :creation_date
 
-    def initialize
-        @id = 
+    def initialize(description)
         @description = description
         @creation_date = creation_date
+        @id = SUID.generate
     end
 end

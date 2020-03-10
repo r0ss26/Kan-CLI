@@ -1,12 +1,12 @@
-class List(title, wip_limit)
-    attr_accessor :title, :cards, wip_limit
+class List
+    attr_accessor :title, :cards, :wip_limit
 
     # A wip_limit of zero (or any negative number) will return false 
     # and means there is no limit to the number of cards that can be added
     def initialize(title, wip_limit=0)
         @title = title
         @wip_limit = wip_limit
-        @cards = {}
+        @cards = {} # A dictionary to contain the cards, the key will be the card id
     end
 
     # A method for adding cards to a list
