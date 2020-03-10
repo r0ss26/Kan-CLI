@@ -1,23 +1,3 @@
-class Board(title)
-    attr_accessor :title, :creation_date, :lists
-
-    def initialize(title)
-        @title = title
-        @creation_date = Time.new
-        @lists = {}
-    end
-
-    # Takes a list and adds it to the board
-    def add_list(list)
-        @lists[list.title] = list
-    end
-
-    def delete_list(list)
-        @lists[list.title].delete(list.title)
-    end
-
-end
-
 class List(title, wip_limit)
     attr_accessor :title, :cards, wip_limit
 
@@ -28,7 +8,6 @@ class List(title, wip_limit)
         @wip_limit = wip_limit
         @cards = {}
     end
-
 
     # A method for adding cards to a list
     def add_card(card)
@@ -51,13 +30,4 @@ class List(title, wip_limit)
         @cards[card.desc].delete(card.title)
     end
 
-end
-
-class Card(description)
-    attr_accessor :description, :creation_date
-
-    def initialize
-        @description = description
-        @creation_date = creation_date
-    end
 end
