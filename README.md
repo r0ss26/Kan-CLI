@@ -101,7 +101,7 @@ Priorities (All checklist items are the same priority level as the relevant feat
 
 There will be board class - a board object will be created when the user runs the program and is prompted to create a board. The board class will have methods for adding lists and removing lists to and from itself, it will also have a title and a creation date.
 
-- [x] Define a Board class and implement attributes for 
+- [x] Define a Board class and implement attributes for
 
   - [x] title
   - [x] <span style="background-color:#00FFC5">creation date</span>
