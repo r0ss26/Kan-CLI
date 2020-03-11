@@ -1,3 +1,5 @@
+require 'tty-box'
+
 class Board
     attr_accessor :title, :creation_date, :lists
 
@@ -19,19 +21,23 @@ class Board
 
     # A method for displaying the board
     def display_board
+
+        system "clear"
+        
         # Itereate through each list in the board
         for list in @lists.values
-            # Print the title to the user
-            system "echo '#{list.title}' | lolcat" 
-            # Loop through the cards in the list and print them to the user
+
+            # Store the card description in an array used to print to the user
+            card_descriptions = []
             for card in list.cards.values
-                puts card.description
+                card_descriptions.push(card.description)
             end
+
+            # Use a TTY Box to represent a list
+            print TTY::Box.frame(width: 30, height: (list.cards.values.length + 1) * 2, title: {top_left: "#{list.title}"}) { card_descriptions.join("\n") }
         end
 
         display_menu
+
     end
-
-
-
 end
