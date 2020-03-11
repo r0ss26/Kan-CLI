@@ -1,3 +1,6 @@
+require 'colorize'
+require 'colorized_string'
+
 class List
     attr_accessor :title, :cards, :wip_limit
 
@@ -19,14 +22,14 @@ class List
             @cards[card.id] = card
             return "Succesfully added #{card.id} to #{@title}"
         elsif @wip_limit && @cards.length >= @wip_limit
-            return "Card not added. You have reached the WIP limit for this list."
+            puts "Card not added. You have reached the WIP limit for this list.".colorize(:red)
         else
-            return "There was an error adding your card"
+            puts "There was an error adding your card".colorize(:red)
         end
     end
 
     # A method for deleting a card from a list
     def delete_card(card)
-        @cards[card.desc].delete(card.title)
+        @cards.delete(card.id)
     end
 end

@@ -28,6 +28,8 @@ class Board
                 puts card.description
             end
         end
+
+        display_menu
     end
 
 

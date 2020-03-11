@@ -7,6 +7,7 @@ require_relative "Classes/List.rb"
 require 'figlet'
 require 'lolcat'
 require 'tty-prompt'
+require 'cli/ui'
 
 # Figlet Configuration
 font = Figlet::Font.new('/big.flf')
@@ -40,8 +41,6 @@ def sign_up
     $state["user"]["username"] = username
     $state["user"]["pw"] = password
 
-    create_board
-
 end
 
 # Handle board creation
@@ -59,7 +58,6 @@ def create_board
     # Store the board in the state variable
     $state["boards"][board.title] = board
 
-    create_list
 end
 
 # Handle list creation
@@ -97,8 +95,6 @@ def create_list
 
     end
 
-    create_card
-
 end
 
 # Create a card and add it to a given list
@@ -121,7 +117,6 @@ def create_card
         add_card = $prompt.select("Would you like to add some cards to your lists?", {"Yes" => true, "No" => false})
     end
 
-
 end
 
 def display_welcome_screen
@@ -137,9 +132,80 @@ def display_welcome_screen
     end
 end
 
+def move_card
+    from_list = nil
+    # Prompt the user to select which card to move
+    card_to_move = $prompt.select("Which card would you like to move?") do |menu|
+        # Itereate through each list in the board
+        for list in @lists.values
+            for card in list.cards.values
+                from_list = list.title
+                menu.choice "#{card.description}", card
+            end
+        end
+    end
+
+    # prompt the user to select which list to move it to
+    to_list = $prompt.select("which list would you like to move to?") do |menu|
+        for list in @lists.values
+            menu.choice "#{list.title}", list
+        end
+    end
+
+    # add the card to the new list
+    to_list.add_card(card_to_move)
+
+    # delete the card
+    $state["current board"].lists[from_list].delete_card(card_to_move)
+
+
+end
+
+def display_menu
+
+    menu = $prompt.select("What next?") do |menu|
+        menu.default 3
+      
+        menu.choice 'Add a List', 1
+        menu.choice 'Add a Card', 2
+        menu.choice 'Exit', 3
+        menu.choice 'Move card', 4
+      end
+
+    case menu
+    when 1
+        input_loop("list")
+    when 2
+        input_loop("card")
+    when 3
+        return 1
+    when 4
+        move_card
+    end
+
+    input_loop("card")
+end
+
+
 def init
     display_welcome_screen
+    input_loop("board")
+end
+
+def input_loop(start_position)
+    if start_position == "board"
+        create_board
+        create_list
+        create_card
+    elsif start_position == "list"
+        create_list
+        create_card
+    elsif start_position == "card"
+        create_card
+    end
+
     $state["current board"].display_board
+    display_menu
 end
 
 init
