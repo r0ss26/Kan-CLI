@@ -14,30 +14,27 @@ class Board
         @lists[list.title] = list
     end
 
-    # Deletes a given list
+    # Deletes a given list from the board
     def delete_list(list)
         @lists[list.title].delete(list.title)
     end
 
     # A method for displaying the board
     def display_board
-
-        # system "clear"
+        system "clear"
         
         # Itereate through each list in the board
         for list in @lists.values
-
             # Store the card description in an array used to print to the user
             card_descriptions = []
             for card in list.cards.values
                 card_descriptions.push(card.description)
             end
 
-            # Use a TTY Box to represent a list
+            # Use a TTY Box to represent a list visually
             print TTY::Box.frame(width: 30, height: (list.cards.values.length + 1) * 2, title: {top_left: "#{list.title}"}) { card_descriptions.join("\n") }
         end
 
         display_menu
-
     end
 end

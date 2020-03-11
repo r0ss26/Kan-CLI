@@ -15,13 +15,14 @@ figlet = Figlet::Typesetter.new(font)
 # TTY-prompt Configuration
 $prompt = TTY::Prompt.new
 
+# Check for a commandline argument to display the help file
 if ARGV[0] == "-help" || ARGV[0] == "-h"
     puts "This is a help article"
     exit
 end
 
-# Store all of the users variables which describe the
-# state of the application
+# Store all of the users variables 
+# which describe the state of the application
 $state = {
     "user" => {},
     "boards" => {},
@@ -29,34 +30,47 @@ $state = {
 }
 
 # Handle user sign up
+# The Regex patterns for validation were generated using ihateregex.io
 def sign_up
 
-    #Prompt user for username and store (Regex was generated from ihateregex.io)
-    username = $prompt.ask("Please enter a username: ") do |q|
-        q.validate(/^[a-z0-9_-]{3,15}$/, "Your username must be between 3 and 15 characters and may only contain a-z, numbers or dashes")
+    # Error Messages
+    username_error = [
+        "Your username must be between 3 and 15 characters",
+        "and may only contain a-z, numbers or dashes"
+    ].join(" ") 
+
+    password_error = [
+        "Your password be at least 8 characters long and",
+        "must contain an uppercase letter, a lowercase ",
+        "letter, a number and a special character."
+    ].join(" ")
+
+    # Prompt the user for a username and store it in the $state variable
+    $state["user"]["username"] = $prompt.ask("Please enter a username: ") do |q|
+        q.validate(/^[a-z0-9_-]{3,15}$/, username_error)
     end
 
-    #Prompt user for password (Regex was generated from ihateregex.io)
-    password = $prompt.mask("Please enter a password: ") do |q|
-        q.validate(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/, "Your password be at least 8 characters long and must contain an uppercase letter, a lowercase letter, a number and a special character.")
+    # Prompt the user for a password and store it in the $state variable
+    puts "(#{password_error})"
+    $state["user"]["pw"] = $prompt.mask("Please enter a password: ") do |q|
+        q.validate(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/, password_error)
     end
-
-    # Store the username and password in the state variable
-    $state["user"]["username"] = username
-    $state["user"]["pw"] = password
-
 end
 
 # Handle board creation
 def create_board
-
     # Prompt the user to create a Board
     name = $prompt.ask("Let's create a board! What would you like to call it?")
 
+    # Make sure the user inputs a name
+    while name == nil
+        name = $prompt.ask("Please enter a board name: ")
+    end
+    
     # Create the board and inform the user
     board = Board.new(name)
     puts "Your new board #{board.title.upcase} was created! (#{board.creation_date})".colorize(:green)
-
+    
     # Set the current board to be the newly created board
     $state["current board"] = board
 
@@ -66,14 +80,16 @@ end
 def create_list
 
     # Prompt the user to create as many lists as they like
-    add_list = $prompt.select("Would you like to add some lists to #{$state["current board"].title.upcase}", {"Yes" => true, "No" => false})
-    while add_list
+    add_list = $prompt.select(
+        "Would you like to add some lists to #{$state["current board"].title.upcase}", 
+        {"Yes" => true, "No" => false})
 
+    while add_list
         # Get the list name from the user
         list_name = $prompt.ask("Enter a name for you list: ")
 
         # Set a limit for the number of cards
-        wip_limits = [
+        card_limits = [
             "No",
             3,
             5,
@@ -81,36 +97,36 @@ def create_list
             "Custom" 
         ]
 
-        def prompt(question)
+        # Check with the user if they want to limit how many cards can be added to the list
+        card_limit = $prompt.select(
+            "Would you like to set a limit for the number of cards you can add to this list?", 
+            card_limits)
 
-        end
-
-        # Set a "Work in Progress" Limit
-        wip_limit = $prompt.select("Would you like to set a limit for the number of cards you can add to this list?", wip_limits)
-        if wip_limit == "Custom"
-            wip_limit = $prompt.ask("Enter a custom card limit: ").to_i
-        elsif wip_limit == "No"
-            wip_limit = false
+        if card_limit == "Custom"
+            card_limit = $prompt.ask("Enter a custom card limit: ").to_i
+        elsif card_limit == "No"
+            card_limit = false
         end
     
         # Create the list and add it the currently active board
-        $state["current board"].add_list(List.new(list_name, wip_limit))
+        $state["current board"].add_list(List.new(list_name, card_limit))
 
         # Check if the user would like to add another list
-        add_list = $prompt.select("Would you like to add more lists to #{$state["current board"].title.upcase}", {"Yes" => true, "No" => false})
-
+        add_list = $prompt.select(
+            "Would you like to add more lists to #{$state["current board"].title.upcase}", 
+            {"Yes" => true, "No" => false})
     end
-
 end
 
-# Create a card and add it to a given list
+# Prompt the user to create a card and 
+# then add it to the chosen list
 def create_card
-
     # Prompt the user to create cards and add them to lists
-    add_card = $prompt.select("Would you like to add some cards to your lists?", {"Yes" => true, "No" => false})
+    add_card = $prompt.select(
+        "Would you like to add some cards to your lists?", 
+        {"Yes" => true, "No" => false})
 
     while add_card
-        
         # Check which list to add the card to
         lists = $state["current board"].lists.keys
         add_to_list = $prompt.select("Which list would you like to add the card to?", lists)
@@ -143,44 +159,42 @@ end
 # Handle moving a card to a different list
 def move_card
     from_list = nil
-    # Prompt the user to select which card to move, returns a card object
-    card_to_move = $prompt.select("Which card would you like to move?") do |menu|
 
+    # Prompt the user to select which card to move => returns a card object
+    card_to_move = $prompt.select("Which card would you like to move?") do |menu|
         # Itereate through each list in the board
         for list in @lists.values
-            
             # Print the cards within the list
             for card in list.cards.values
-                menu.choice "[#{list.title}]: #{card.description}", [card, list]
+                menu.choice("[#{list.title}]: #{card.description}", {"card" => card, "list" => list})
             end
         end
     end
-    from_list = card_to_move[1]
 
-    # prompt the user to select which list to move it to, returns a list object
+    from_list = card_to_move["list"]
+
+    # prompt the user to select which list to move it to => returns a list object
     to_list = $prompt.select("which list would you like to move to?") do |menu|
         for list in @lists.values
             menu.choice("#{list.title}", list)
         end
     end
 
-    # Move the card
-    added_successfully = to_list.add_card(card_to_move[0])
+    # Move the card - adds the card to the new list if there is room, then deletes from the old list if the add was succesfull
+    added_successfully = to_list.add_card(card_to_move["card"])
     if added_successfully
-        from_list.delete_card(card_to_move[0])
+        from_list.delete_card(card_to_move["card"])
     end
 
     # Show the user their updated board
     display_board
-
 end
 
 # Show the main menu to the user
 def display_menu
-
     # Define the menu
     menu = $prompt.select("What next?") do |menu|
-        menu.default 3
+        menu.default 1
       
         menu.choice 'Add a List', 1
         menu.choice 'Add a Card', 2
@@ -229,4 +243,5 @@ end
 
 init
 
-# Debugging p $state
+# Debugging 
+# p $state
