@@ -8,4 +8,5 @@ class Card
         @creation_date = creation_date
         @id = SUID.generate
     end
+    
 end

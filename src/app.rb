@@ -15,6 +15,11 @@ figlet = Figlet::Typesetter.new(font)
 # TTY-prompt Configuration
 $prompt = TTY::Prompt.new
 
+if ARGV[0] == "-help" || ARGV[0] == "-h"
+    puts "This is a help article"
+    exit
+end
+
 # Store all of the users variables which describe the
 # state of the application
 $state = {
@@ -26,12 +31,12 @@ $state = {
 # Handle user sign up
 def sign_up
 
-    #Prompt user for username and store
+    #Prompt user for username and store (Regex was generated from ihateregex.io)
     username = $prompt.ask("Please enter a username: ") do |q|
         q.validate(/^[a-z0-9_-]{3,15}$/, "Your username must be between 3 and 15 characters and may only contain a-z, numbers or dashes")
     end
 
-    #Prompt user for password
+    #Prompt user for password (Regex was generated from ihateregex.io)
     password = $prompt.mask("Please enter a password: ") do |q|
         q.validate(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$/, "Your password be at least 8 characters long and must contain an uppercase letter, a lowercase letter, a number and a special character.")
     end
@@ -138,32 +143,32 @@ end
 # Handle moving a card to a different list
 def move_card
     from_list = nil
-    # Prompt the user to select which card to move
+    # Prompt the user to select which card to move, returns a card object
     card_to_move = $prompt.select("Which card would you like to move?") do |menu|
 
         # Itereate through each list in the board
         for list in @lists.values
             
-            # Print the cards in within the list
+            # Print the cards within the list
             for card in list.cards.values
-                from_list = list.title
-                menu.choice "[#{list.title}]: #{card.description}", card
+                menu.choice "[#{list.title}]: #{card.description}", [card, list]
             end
         end
     end
+    from_list = card_to_move[1]
 
-    # prompt the user to select which list to move it to
+    # prompt the user to select which list to move it to, returns a list object
     to_list = $prompt.select("which list would you like to move to?") do |menu|
         for list in @lists.values
-            menu.choice "#{list.title}", list
+            menu.choice("#{list.title}", list)
         end
     end
 
-    # add the card to the new list
-    to_list.add_card(card_to_move)
-
-    # delete the card from the old list
-    $state["current board"].lists[from_list].delete_card(card_to_move)
+    # Move the card
+    added_successfully = to_list.add_card(card_to_move[0])
+    if added_successfully
+        from_list.delete_card(card_to_move[0])
+    end
 
     # Show the user their updated board
     display_board

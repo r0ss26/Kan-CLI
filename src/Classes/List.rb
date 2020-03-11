@@ -20,12 +20,32 @@ class List
         # return an error message
         if @wip_limit && @cards.length < @wip_limit || !@wip_limit
             @cards[card.id] = card
-            return "Succesfully added #{card.id} to #{@title}"
+            puts "Succesfully added card to #{@title}".colorize(:green)
+            return true
         elsif @wip_limit && @cards.length >= @wip_limit
             puts "Card not added. You have reached the WIP limit for this list.".colorize(:red)
+            return false
         else
             puts "There was an error adding your card".colorize(:red)
+            return false
         end
+    end
+
+    # A method for moving a card
+    def move_card(card, to_list) 
+
+        # # Check if the destination has enough room
+        # if to_list.cards.values.length == to_list.wip_limit 
+        #     puts "#{to_list.title} has reached its card limit"
+        # else
+
+        #     # add the card to the new list
+        #     to_list.add_card(card)
+
+        #     # delete the card from the current list
+        #     delete_card(card)
+        
+        # end
     end
 
     # A method for deleting a card from a list

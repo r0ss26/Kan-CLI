@@ -22,7 +22,7 @@ class Board
     # A method for displaying the board
     def display_board
 
-        system "clear"
+        # system "clear"
         
         # Itereate through each list in the board
         for list in @lists.values
