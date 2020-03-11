@@ -83,7 +83,7 @@ During the setup phase of the application the user will be guided through a seri
 
 ## Control Flow
 
-![Kan-CLI-Control-Flow](/home/ross/Documents/Assignments/Terminal App/Kan-CLI/docs/Kan-CLI-Control-Flow.png)
+![Kan-CLI-Control-Flow](./docs/Kan-CLI-Control-Flow.png)
 
 
 
