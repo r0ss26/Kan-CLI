@@ -79,8 +79,6 @@ All text interactions will be prompted with a call to action followed by a colon
 
 Whenever the user attempts to perform an action that is not allowed by the application. An error message describing why the action cannot be performed is printed to the console in red text. They will then be re-prompted to perform the action.
 
----
-
 During the setup phase of the application the user will be guided through a series of menu selection and text prompts in order to get the application setup. After the initial setup the user will be shown a visual representation of their board, along with a menu asking them what they would like to do next. This menu will run the interaction loop again at a specific point to allow the user to modify their board.
 
 ## Control Flow
