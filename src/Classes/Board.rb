@@ -21,6 +21,10 @@ class Board
 
     # A method for displaying the board
     def display_board
+        if @lists.empty?
+            display_menu
+        end
+
         system "clear"
         
         # Itereate through each list in the board

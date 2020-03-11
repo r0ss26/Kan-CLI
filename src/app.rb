@@ -10,14 +10,14 @@ require 'tty-prompt'
 
 # Figlet Configuration
 font = Figlet::Font.new('/big.flf')
-figlet = Figlet::Typesetter.new(font)
+$figlet = Figlet::Typesetter.new(font)
 
 # TTY-prompt Configuration
 $prompt = TTY::Prompt.new
 
 # Check for a commandline argument to display the help file
 if ARGV[0] == "-help" || ARGV[0] == "-h"
-    puts "This is a help article"
+    system "cat help.txt"
     exit
 end
 
@@ -121,6 +121,12 @@ end
 # Prompt the user to create a card and 
 # then add it to the chosen list
 def create_card
+    # If there are no lists then warn the user
+    if $state["current board"].lists.empty?
+        puts "You must create a list before you can add cards".colorize(:red)
+        return
+    end
+
     # Prompt the user to create cards and add them to lists
     add_card = $prompt.select(
         "Would you like to add some cards to your lists?", 
@@ -158,6 +164,11 @@ end
 
 # Handle moving a card to a different list
 def move_card
+    if $state["current board"].lists.empty?
+        puts "There are no cards to move".colorize(:red)
+        display_menu
+    end
+
     from_list = nil
 
     # Prompt the user to select which card to move => returns a card object
@@ -170,6 +181,8 @@ def move_card
             end
         end
     end
+
+
 
     from_list = card_to_move["list"]
 

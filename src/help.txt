@@ -1,0 +1,10 @@
+Kan-CLI is a command line Kanban board.
+
+Kan-CLI allows users to create boards, lists and cards which form a hierarchical relationship . 
+Users are able to place cards within different lists. Users may set a limit to the number of 
+cards that can be added to a list. This allows the user to stay focused on a defined number of 
+tasks and help manage task overload, facilitating a streamlined workflow.
+
+When run, the application will guide the user through a serie of menu and text prompts to setup
+the initial board. After which the user may manipulate the board by adding or moving cards and
+adding lists.
