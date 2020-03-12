@@ -164,7 +164,21 @@ end
 
 # Handle moving a card to a different list
 def move_card
+    # If there are no lists, there are no cards
     if $state["current board"].lists.empty?
+        puts "There are no cards to move".colorize(:red)
+        display_menu
+    end
+
+    # Check all the lists, if there are no cards display an error
+    empty_lists = 0
+    for list in $state["current board"].lists.values
+        if list.cards.empty?
+            empty_lists += 1
+        end
+    end
+    if empty_lists == $state["current board"].lists.length
+        
         puts "There are no cards to move".colorize(:red)
         display_menu
     end
@@ -182,8 +196,6 @@ def move_card
         end
     end
 
-
-
     from_list = card_to_move["list"]
 
     # prompt the user to select which list to move it to => returns a list object
@@ -193,10 +205,13 @@ def move_card
         end
     end
 
-    # Move the card - adds the card to the new list if there is room, then deletes from the old list if the add was succesfull
-    added_successfully = to_list.add_card(card_to_move["card"])
-    if added_successfully
-        from_list.delete_card(card_to_move["card"])
+    # Check the card is not being moved to itself
+    if !(from_list == to_list)
+        # Move the card - adds the card to the new list if there is room, then deletes from the old list if the add was succesfull
+        added_successfully = to_list.add_card(card_to_move["card"])
+        if added_successfully
+            from_list.delete_card(card_to_move["card"])
+        end
     end
 
     # Show the user their updated board

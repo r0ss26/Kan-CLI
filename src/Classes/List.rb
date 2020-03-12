@@ -20,7 +20,7 @@ class List
             puts "Succesfully added card to #{@title}".colorize(:green)
             return true
         elsif @card_limit && @cards.length >= @card_limit
-            puts "Card not added. You have reached the WIP limit for this list.".colorize(:red)
+            puts "Card not added. You have reached the card limit for this list.".colorize(:red)
             return false
         else
             puts "There was an error adding your card".colorize(:red)
