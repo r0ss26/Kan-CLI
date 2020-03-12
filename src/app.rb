@@ -8,6 +8,9 @@ require 'figlet'
 require 'lolcat'
 require 'tty-prompt'
 
+# JSON
+require 'json'
+
 # Figlet Configuration
 font = Figlet::Font.new('/big.flf')
 $figlet = Figlet::Typesetter.new(font)
@@ -70,6 +73,9 @@ def create_board
     # Create the board and inform the user
     board = Board.new(name)
     puts "Your new board #{board.title.upcase} was created! (#{board.creation_date})".colorize(:green)
+
+    # Store the board
+    $state["boards"][board.title] = board
     
     # Set the current board to be the newly created board
     $state["current board"] = board
@@ -148,6 +154,23 @@ def create_card
 
 end
 
+# Handle user sign in
+# def sign_in
+#     username_try = $prompt.ask("Please enter your username: ")
+
+#     while !(File.file?("users/#{username_try}.json"))
+#         puts "No user found"
+#         username_try = $prompt.ask("Please enter your username: ")
+#     end
+
+#     $state = JSON.parse(File.read("users/#{username_try}.json"))
+
+#     p $state
+
+#     $state["current board"].display_board
+
+# end
+
 # Handle displaying the initial welcome screen
 def display_welcome_screen
     system "echo 'Welcome to Kan-CLI' | figlet | lolcat"
@@ -215,7 +238,7 @@ def move_card
     end
 
     # Show the user their updated board
-    display_board
+    $state["current board"].display_board
 end
 
 # Show the main menu to the user
@@ -224,11 +247,13 @@ def display_menu
     menu = $prompt.select("What next?") do |menu|
         menu.default 1
       
+        menu.choice 'Create a New Board', 5
+        menu.choice 'Switch Board', 6
         menu.choice 'Add a List', 1
         menu.choice 'Add a Card', 2
         menu.choice 'Move card', 3
         menu.choice 'Exit', 4
-      end
+    end
 
     # Handle user input
     case menu
@@ -240,28 +265,52 @@ def display_menu
         move_card
     when 4
         exit
+    when 5
+        input_loop("board")
+    when 6
+        switch_board
     end
+end
+
+def switch_board
+    selected_board = $prompt.select("Which board would you like to select?") do |menu|
+        for board in $state["boards"].values
+            menu.choice("#{board.title}", board)
+        end
+    end
+
+    $state["current board"] = selected_board
+
+    $state["current board"].display_board
+    
 end
 
 # Define the loop for getting user input
 # This runs when the user adds any new components (boards, lists or cards)
 def input_loop(start_position)
 
+    # Methods as array elements (https://stackoverflow.com/questions/13948910/ruby-methods-as-array-elements-how-do-they-work)
+    input_flow = [method(:create_board), method(:create_list), method(:create_card)]
+
     # Start the loop at a given position
     if start_position == "board"
-        create_board
-        create_list
-        create_card
+        input_flow.each { |m| m.call }
     elsif start_position == "list"
-        create_list
-        create_card
+        input_flow[1..2].each { |m| m.call }
     elsif start_position == "card"
-        create_card
+        input_flow[2].call
     end
 
     # Show the user their updated board
     $state["current board"].display_board
 end
+
+# def save_quit
+#     File.open("#{$state["user"]["username"]}.json","w") do |f|
+#         f.write($state.to_json)
+#       end
+#       exit
+# end
 
 # Start the application
 def init
