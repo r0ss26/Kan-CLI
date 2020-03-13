@@ -164,10 +164,6 @@ Define methods for the following
 ### <span style="background-color:#00FFC5">Login/Logout</span>
 
 - [x] Allow the user to sign up
-- [ ] Store the users credentials
-- [ ] On quit, save the state of the users session
-
-
 
 ## Help Documentation
 
